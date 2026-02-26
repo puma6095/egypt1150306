@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇美博物館特展：埃及之王法老問卷系統</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* 隱藏元素用的 class */
+        .hidden-el { display: none !important; }
+        /* 預防表單在發送時閃爍 */
+        input:disabled, textarea:disabled, select:disabled { opacity: 0.6; cursor: not-allowed; }
+    </style>
+</head>
+<body class="bg-stone-100 font-sans pb-12 text-stone-800">
+
+    <!-- Header -->
+    <div class="relative h-64 bg-slate-900 overflow-hidden flex items-center justify-center text-center px-4">
+        <div class="absolute inset-0 opacity-20" style="background-image: url('https://www.transparenttextures.com/patterns/egyptian-papyrus.png');"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-amber-500/20 to-slate-900/80"></div>
+        <div class="relative z-10">
+            <div class="flex justify-center mb-3">
+                <i data-lucide="gem" class="text-amber-400 w-8 h-8"></i>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-widest mb-2">埃及之王：法老</h1>
+            <p class="text-amber-200 text-sm md:text-base font-medium uppercase tracking-widest">
+                奇美博物館 · 醫學人文素養教學活動
+            </p>
+        </div>
+    </div>
+
+    <!-- 主要內容區 -->
+    <div id="app-container" class="max-w-4xl mx-auto -mt-12 px-4 relative z-20">
+        
+        <!-- 表單視圖 -->
+        <div id="form-view">
+            <!-- 模式切換器 -->
+            <div class="mb-6">
+                <label class="flex items-center gap-2 text-white/90 text-sm font-bold mb-2 ml-2">
+                    <i data-lucide="layout" class="w-4 h-4"></i> 請選擇填答階段：
+                </label>
+                <div class="flex bg-white/90 backdrop-blur p-2 rounded-2xl shadow-xl border border-white">
+                    <button type="button" id="btn-mode-pre" onclick="switchMode('pre')" class="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-extrabold transition-all bg-amber-700 text-white shadow-lg">
+                        <i data-lucide="history" class="w-5 h-5"></i> 1. 前測問卷
+                    </button>
+                    <button type="button" id="btn-mode-post" onclick="switchMode('post')" class="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-extrabold transition-all text-stone-400 hover:bg-stone-50">
+                        <i data-lucide="clipboard-check" class="w-5 h-5"></i> 2. 後測問卷
+                    </button>
+                </div>
+            </div>
+
+            <!-- 錯誤提示區 -->
+            <div id="error-message" class="hidden-el mb-6 flex items-center gap-2 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl shadow-sm">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                <span id="error-text" class="font-bold"></span>
+            </div>
+
+            <!-- 表單 -->
+            <form id="main-form" class="space-y-6">
+                <!-- 基本資料 -->
+                <section class="bg-white p-6 md:p-8 rounded-3xl shadow-md border border-stone-200">
+                    <div class="flex items-center gap-2 mb-6 text-amber-800 border-b pb-4">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                        <h2 class="text-xl font-bold">填答人基本資料</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-stone-600 mb-2">姓名</label>
+                            <input required type="text" id="input-name" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="請輸入姓名">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-stone-600 mb-2">實習科別</label>
+                            <input required type="text" id="input-dept" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="例如：內科、外科">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-stone-600 mb-2">學校</label>
+                            <input required type="text" id="input-school" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="例如：成功大學、高雄醫學大學">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-stone-600 mb-2">年級別</label>
+                            <select required id="input-grade" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none transition-all appearance-none">
+                                <option value="">請選擇年級</option>
+                                <option value="醫六">醫六</option>
+                                <option value="醫七">醫七</option>
+                                <option value="後醫三">後醫三</option>
+                                <option value="後醫四">後醫四</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 量化評估 -->
+                <section class="bg-white p-6 md:p-8 rounded-3xl shadow-md border border-stone-200">
+                    <div class="flex items-center gap-2 mb-6 text-amber-800 border-b pb-4">
+                        <i data-lucide="activity" class="w-5 h-5"></i>
+                        <h2 class="text-xl font-bold">量化自我評估 (1-5分)</h2>
+                    </div>
+                    <div id="scores-container" class="space-y-8">
+                        <!-- 量化題目由 JS 動態生成 -->
+                    </div>
+                </section>
+
+                <!-- 質性反思 -->
+                <section class="bg-white p-6 md:p-8 rounded-3xl shadow-md border border-stone-200">
+                    <div class="flex items-center gap-2 mb-6 text-amber-800 border-b pb-4">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                        <h2 class="text-xl font-bold">人文思維與反思 (必填)</h2>
+                    </div>
+                    <div class="space-y-8">
+                        <div class="space-y-3">
+                            <label id="label-q1" class="text-stone-800 font-medium leading-relaxed"></label>
+                            <textarea required id="input-q1" class="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-4 focus:ring-2 focus:ring-amber-500 outline-none h-32 resize-none shadow-inner" placeholder="請填寫您的想法..."></textarea>
+                        </div>
+                        <div class="space-y-3">
+                            <label id="label-q2" class="text-stone-800 font-medium leading-relaxed"></label>
+                            <textarea required id="input-q2" class="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-4 focus:ring-2 focus:ring-amber-500 outline-none h-32 resize-none shadow-inner" placeholder="請填寫您的想法..."></textarea>
+                        </div>
+                        <div id="container-q3" class="space-y-3 hidden-el">
+                            <label id="label-q3" class="text-stone-800 font-medium leading-relaxed"></label>
+                            <textarea id="input-q3" class="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-4 focus:ring-2 focus:ring-amber-500 outline-none h-32 resize-none shadow-inner" placeholder="請填寫您的想法..."></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 提交按鈕 -->
+                <div class="pt-6">
+                    <button type="submit" id="btn-submit" class="w-full py-5 bg-amber-700 text-white rounded-2xl font-bold text-lg hover:bg-amber-800 transition-all flex items-center justify-center gap-3 shadow-xl shadow-amber-200 disabled:opacity-70 disabled:bg-stone-400 disabled:shadow-none">
+                        <i data-lucide="send" id="icon-send" class="w-5 h-5"></i>
+                        <i data-lucide="loader-2" id="icon-loading" class="w-5 h-5 animate-spin hidden-el"></i>
+                        <span id="text-submit">提交「前測」並存入試算表</span>
+                    </button>
+                    <p class="text-center text-stone-400 text-sm mt-6 italic bg-white/50 py-2 rounded-lg">
+                        * 資料將自動寫入分頁「UGY醫學人文問卷」
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <!-- 提交成功視圖 -->
+        <div id="success-view" class="hidden-el min-h-[60vh] flex items-center justify-center py-10">
+            <div class="max-w-md w-full bg-white rounded-3xl shadow-xl p-10 text-center border-t-8 border-amber-600">
+                <div class="flex justify-center mb-6">
+                    <i data-lucide="check-circle-2" class="w-20 h-20 text-emerald-500 animate-bounce"></i>
+                </div>
+                <h2 id="success-title" class="text-2xl font-bold text-stone-800 mb-2">提交成功！</h2>
+                <p class="text-stone-500 mb-8 font-medium">資料已同步更新至教學部後台試算表。</p>
+                
+                <div class="space-y-3">
+                    <button type="button" id="btn-goto-post" onclick="switchMode('post')" class="hidden-el w-full py-4 bg-amber-700 text-white rounded-xl font-bold hover:bg-amber-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-200">
+                        前往填寫「後測問卷」 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                    <button type="button" onclick="showForm()" class="w-full py-4 bg-stone-100 text-stone-600 rounded-xl font-bold hover:bg-stone-200 transition-colors">
+                        回傳新問卷
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ---------------------------------------------------------
+        // 您的 Google Apps Script 網頁應用程式 URL
+        // ---------------------------------------------------------
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXR-txR6VdpXcS5_edAMIfupt9VYbmodnysjuGFOHKo5jTGH45c_BcNk9Q0k72JtiY/exec"; 
+
+        // 全域狀態
+        let currentMode = 'pre'; // 'pre' 或 'post'
+        let currentScores = [null, null, null, null, null];
+        let isSending = false;
+
+        // 題目資料庫
+        const db = {
+            questions: {
+                pre: [
+                    "我認為藝術賞析與醫學臨床工作具有高度相關性。",
+                    "我能透過觀察非醫療藝術品，提升對病體細節的敏銳度。",
+                    "我對古埃及文明的醫療技術與解剖學背景有基本認識。",
+                    "我認為多元文化體驗有助於提升與病人的同理心。",
+                    "我了解如何在繁忙的醫療工作中，透過藝術活動調節壓力。"
+                ],
+                post: [
+                    "本次展覽讓我對古代「死亡觀」有更深層的思考，有助於未來臨床安寧照護。",
+                    "從法老雕像與藝術品中，我練習到了對人體解剖結構的細微觀察。",
+                    "我認為瞭解歷史文化脈絡，能顯著提升我對跨國籍病人的溝通包容力。",
+                    "透過本次活動，我有效地釋放了近期在臨床實習中的心理壓力。",
+                    "我能將展覽中的「人文精神」連結到我未來的醫療實踐與專業素養。"
+                ]
+            },
+            qualitative: {
+                pre: [
+                    "提到「法老」與「古埃及」，您第一個聯想到的醫療或生物學相關詞彙是什麼？為什麼？",
+                    "您期待在本次關於「權力」與「神格化」的展覽中，觀察到什麼樣的人文特質或歷史細節？"
+                ],
+                post: [
+                    "古埃及人追求「永生」，身為醫學生，您在觀展後對於「死亡」與「軀體保存」有什麼新的體悟？",
+                    "展覽中的哪一件文物或描述，最讓你聯想到人體的生理構造或病生理徵象？（請描述細節）",
+                    "法老權傾天下仍需面對疾病凋零。這帶給您未來在醫療專業素養（Professionalism）上什麼樣的啟發？"
+                ]
+            }
+        };
+
+        // 初始化 Lucide Icons
+        lucide.createIcons();
+        
+        // 頁面載入時初始化 UI
+        window.onload = () => {
+            renderUI();
+        };
+
+        // 切換模式 (前測/後測)
+        function switchMode(mode) {
+            if (isSending) return;
+            currentMode = mode;
+            currentScores = [null, null, null, null, null];
+            document.getElementById('main-form').reset();
+            hideError();
+            showForm();
+            renderUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 顯示表單視圖，隱藏成功視圖
+        function showForm() {
+            document.getElementById('form-view').classList.remove('hidden-el');
+            document.getElementById('success-view').classList.add('hidden-el');
+            // 如果是從成功畫面點選回傳新問卷，也順便重置分數
+            if(!isSending) {
+                currentScores = [null, null, null, null, null];
+                document.getElementById('main-form').reset();
+                renderQuantitative();
+            }
+        }
+
+        // 顯示錯誤訊息
+        function showError(msg) {
+            const errDiv = document.getElementById('error-message');
+            document.getElementById('error-text').innerText = msg;
+            errDiv.classList.remove('hidden-el');
+            window.scrollTo({ top: document.getElementById('form-view').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        // 隱藏錯誤訊息
+        function hideError() {
+            document.getElementById('error-message').classList.add('hidden-el');
+        }
+
+        // 更新 UI 介面
+        function renderUI() {
+            // 1. 更新按鈕樣式
+            const btnPre = document.getElementById('btn-mode-pre');
+            const btnPost = document.getElementById('btn-mode-post');
+            
+            if (currentMode === 'pre') {
+                btnPre.className = "flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-extrabold transition-all bg-amber-700 text-white shadow-lg";
+                btnPost.className = "flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-extrabold transition-all text-stone-400 hover:bg-stone-50";
+            } else {
+                btnPost.className = "flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-extrabold transition-all bg-amber-700 text-white shadow-lg";
+                btnPre.className = "flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-extrabold transition-all text-stone-400 hover:bg-stone-50";
+            }
+
+            // 2. 重新渲染量化評估題
+            renderQuantitative();
+
+            // 3. 更新質性反思題
+            document.getElementById('label-q1').innerText = db.qualitative[currentMode][0];
+            document.getElementById('label-q2').innerText = db.qualitative[currentMode][1];
+            
+            const q3Container = document.getElementById('container-q3');
+            const q3Input = document.getElementById('input-q3');
+            
+            if (currentMode === 'post') {
+                document.getElementById('label-q3').innerText = db.qualitative.post[2];
+                q3Container.classList.remove('hidden-el');
+                q3Input.setAttribute('required', 'true');
+            } else {
+                q3Container.classList.add('hidden-el');
+                q3Input.removeAttribute('required');
+                q3Input.value = ''; // 清空隱藏欄位
+            }
+
+            // 4. 更新送出按鈕文字
+            document.getElementById('text-submit').innerText = `提交「${currentMode === 'pre' ? '前測' : '後測'}」並存入試算表`;
+        }
+
+        // 點選評分
+        function handleScoreClick(questionIndex, scoreValue) {
+            if(isSending) return;
+            currentScores[questionIndex] = scoreValue;
+            renderQuantitative(); // 重新渲染以更新樣式
+        }
+
+        // 渲染量化評估區塊
+        function renderQuantitative() {
+            const container = document.getElementById('scores-container');
+            container.innerHTML = ''; // 清空
+
+            const currentQuestions = db.questions[currentMode];
+
+            currentQuestions.forEach((q, idx) => {
+                const questionHtml = `
+                    <div class="space-y-4 pb-6 border-b border-stone-50 last:border-0">
+                        <p class="text-stone-800 font-medium leading-relaxed">
+                            <span class="text-amber-600 font-bold mr-2">${idx + 1}.</span> ${q}
+                        </p>
+                        <div class="flex justify-between items-center max-w-lg mx-auto md:mx-0">
+                            <span class="text-[10px] md:text-xs text-stone-400 font-bold uppercase tracking-tighter">非常不同意</span>
+                            <div class="flex gap-1 md:gap-4 mx-2">
+                                ${[1, 2, 3, 4, 5].map(val => `
+                                    <button
+                                        type="button"
+                                        ${isSending ? 'disabled' : ''}
+                                        onclick="handleScoreClick(${idx}, ${val})"
+                                        class="w-10 h-10 md:w-12 md:h-12 rounded-full font-bold flex items-center justify-center transition-all ${
+                                            currentScores[idx] === val 
+                                            ? 'bg-amber-600 text-white scale-110 shadow-lg' 
+                                            : 'bg-stone-100 text-stone-400 hover:bg-stone-200'
+                                        } ${isSending ? 'opacity-30 cursor-not-allowed' : ''}"
+                                    >
+                                        ${val}
+                                    </button>
+                                `).join('')}
+                            </div>
+                            <span class="text-[10px] md:text-xs text-stone-400 font-bold uppercase tracking-tighter">非常同意</span>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', questionHtml);
+            });
+        }
+
+        // 指數退避提交函數
+        async function submitWithRetry(data, retries = 5, delay = 1000) {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                return true;
+            } catch (error) {
+                if (retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return submitWithRetry(data, retries - 1, delay * 2);
+                }
+                throw error;
+            }
+        }
+
+        // 設定表單狀態(載入中 / 可用)
+        function setFormLoading(loading) {
+            isSending = loading;
+            const elements = document.querySelectorAll('input, select, textarea, button');
+            elements.forEach(el => {
+                if(el.id !== 'btn-goto-post') { // 成功頁面的按鈕不影響
+                    el.disabled = loading;
+                }
+            });
+
+            const btnSubmit = document.getElementById('btn-submit');
+            const iconSend = document.getElementById('icon-send');
+            const iconLoading = document.getElementById('icon-loading');
+            const textSubmit = document.getElementById('text-submit');
+
+            if (loading) {
+                iconSend.classList.add('hidden-el');
+                iconLoading.classList.remove('hidden-el');
+                textSubmit.innerText = '資料傳送中...';
+            } else {
+                iconSend.classList.remove('hidden-el');
+                iconLoading.classList.add('hidden-el');
+                textSubmit.innerText = `提交「${currentMode === 'pre' ? '前測' : '後測'}」並存入試算表`;
+            }
+            
+            renderQuantitative(); // 刷新分數按鈕的 disabled 狀態
+        }
+
+        // 處理表單提交
+        document.getElementById('main-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideError();
+
+            if (!SCRIPT_URL) {
+                showError("尚未設定 SCRIPT_URL，資料無法送出。");
+                return;
+            }
+
+            // 檢查是否所有評分都已填寫
+            if (currentScores.includes(null)) {
+                showError("請完成所有評分項目的選擇（1-5分）。");
+                return;
+            }
+
+            setFormLoading(true);
+
+            // 收集資料
+            const payload = {
+                testMode: currentMode,
+                name: document.getElementById('input-name').value.trim(),
+                dept: document.getElementById('input-dept').value.trim(),
+                school: document.getElementById('input-school').value.trim(),
+                grade: document.getElementById('input-grade').value,
+                scores: currentScores,
+                q1: document.getElementById('input-q1').value.trim(),
+                q2: document.getElementById('input-q2').value.trim(),
+                q3: currentMode === 'post' ? document.getElementById('input-q3').value.trim() : ''
+            };
+
+            try {
+                await submitWithRetry(payload);
+                
+                // 成功送出後，顯示成功畫面
+                document.getElementById('form-view').classList.add('hidden-el');
+                document.getElementById('success-view').classList.remove('hidden-el');
+                
+                document.getElementById('success-title').innerText = `${currentMode === 'pre' ? '前測' : '後測'}提交成功！`;
+                
+                // 如果是前測送出，顯示「前往後測」按鈕
+                const btnGotoPost = document.getElementById('btn-goto-post');
+                if (currentMode === 'pre') {
+                    btnGotoPost.classList.remove('hidden-el');
+                    // 因為移除 hidden，重新初始化新出現的 lucide icon
+                    lucide.createIcons(); 
+                } else {
+                    btnGotoPost.classList.add('hidden-el');
+                }
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (error) {
+                showError("資料送出失敗，請檢查網路連線或稍後再試。");
+            } finally {
+                setFormLoading(false);
+            }
+        });
+
+    </script>
+</body>
+</html>
