@@ -150,9 +150,6 @@
                 <p class="text-stone-500 mb-8 font-medium">資料已同步更新至教學部後台試算表。</p>
                 
                 <div class="space-y-3">
-                    <button type="button" id="btn-goto-post" onclick="switchMode('post')" class="hidden-el w-full py-4 bg-amber-700 text-white rounded-xl font-bold hover:bg-amber-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-200">
-                        前往填寫「後測問卷」 <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </button>
                     <button type="button" onclick="showForm()" class="w-full py-4 bg-stone-100 text-stone-600 rounded-xl font-bold hover:bg-stone-200 transition-colors">
                         回傳新問卷
                     </button>
@@ -419,16 +416,6 @@
                 document.getElementById('success-view').classList.remove('hidden-el');
                 
                 document.getElementById('success-title').innerText = `${currentMode === 'pre' ? '前測' : '後測'}提交成功！`;
-                
-                // 如果是前測送出，顯示「前往後測」按鈕
-                const btnGotoPost = document.getElementById('btn-goto-post');
-                if (currentMode === 'pre') {
-                    btnGotoPost.classList.remove('hidden-el');
-                    // 因為移除 hidden，重新初始化新出現的 lucide icon
-                    lucide.createIcons(); 
-                } else {
-                    btnGotoPost.classList.add('hidden-el');
-                }
                 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
 
